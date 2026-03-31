@@ -2,6 +2,7 @@ services:
   - type: web
     name: ecowaste-int219-abhinavduvva124
     runtime: node
+    plan: free
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /api/health
