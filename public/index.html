@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EcoWaste – Smart Waste Management System</title>
+  <meta name="description"
+    content="EcoWaste is a smart waste management system for scheduling waste pickup, tracking collection, and promoting eco-friendly disposal in your community." />
+  <meta name="keywords" content="waste management, waste pickup, recycling, eco-friendly, waste collection" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+
+  <!-- ========== PAGE LOADER ========== -->
+  <div id="page-loader">
+    <div class="loader-logo">Eco<span>Waste</span></div>
+    <div class="spinner"></div>
+  </div>
+
+  <!-- ========== TOAST CONTAINER ========== -->
+  <div id="toast-container"></div>
+
+  <!-- ======================================================= -->
+  <!--  LANDING PAGE (shown when not logged in)               -->
+  <!-- ======================================================= -->
+  <div id="landing-page">
+
+    <!-- NAVBAR -->
+    <nav id="navbar">
+      <div class="nav-container">
+        <div class="nav-logo" onclick="scrollToSection('home')" style="cursor:pointer">
+          <div class="nav-logo-icon">🌿</div>
+          <span class="nav-logo-text">Eco<span>Waste</span></span>
+        </div>
+        <div class="nav-links" id="nav-links">
+          <a class="nav-link active" onclick="scrollToSection('home')">Home</a>
+          <a class="nav-link" onclick="scrollToSection('about')">About</a>
+          <a class="nav-link" onclick="scrollToSection('services')">Services</a>
+          <a class="nav-link" onclick="scrollToSection('segregation')">Waste Guide</a>
+          <a class="nav-link" onclick="scrollToSection('contact')">Contact</a>
+        </div>
+        <div class="nav-auth">
+          <button class="nav-btn" onclick="openModal('login-modal')">Login&nbsp;/&nbsp;Register</button>
+          <div class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section id="home">
+      <div class="hero-bg-shapes">
+        <div class="hero-shape"></div>
+        <div class="hero-shape"></div>
+        <div class="hero-shape"></div>
+      </div>
+      <div class="hero-container">
+        <div class="hero-content fade-in-up">
+          <div class="hero-badge">🌿 Smart Eco Solution &nbsp;·&nbsp; Building Cleaner Cities</div>
+          <h1 class="hero-title">
+            Managing Waste,<br />
+            <span class="highlight">Protecting Our</span><br />
+            Planet 🌍
+          </h1>
+          <p class="hero-subtitle">
+            Schedule waste pickups, track collection in real-time, and learn proper waste segregation — all in one
+            modern platform.
+          </p>
+          <div class="hero-actions">
+            <button class="btn-primary" onclick="openModal('register-modal')">
+              🚀 Get Started Free
+            </button>
+            <button class="btn-outline" onclick="scrollToSection('services')">
+              📋 Our Services
+            </button>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <div class="hero-stat-num" id="stat-users">10K+</div>
+              <div class="hero-stat-label">Happy Users</div>
+            </div>
+            <div class="hero-stat">
+              <div class="hero-stat-num">500T+</div>
+              <div class="hero-stat-label">Waste Collected</div>
+            </div>
+            <div class="hero-stat">
+              <div class="hero-stat-num">98%</div>
+              <div class="hero-stat-label">Satisfaction Rate</div>
+            </div>
+          </div>
+        </div>
+        <div class="hero-visual fade-in delay-3">
+          <div class="hero-card-stack">
+            <div class="floating-card">
+              <div class="card-icon">🗓️</div>
+              <div class="card-title">Pickup Scheduled!</div>
+              <div class="card-desc"><span class="status-dot"></span>Tomorrow, 9 AM – 11 AM</div>
+            </div>
+            <div class="floating-card">
+              <div class="card-icon">♻️</div>
+              <div class="card-title">Recyclable Waste</div>
+              <div class="card-desc">2.4 kg ready for pickup</div>
+            </div>
+            <div class="floating-card">
+              <div class="card-icon">🚛</div>
+              <div class="card-title">Vehicle Assigned</div>
+              <div class="card-desc">WM-TRK-001 · ETA 20 min</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="section section-white">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-tag">About Us</span>
+          <h2 class="section-title">Committed to a Cleaner, Greener Future</h2>
+          <p class="section-subtitle">We use technology to revolutionize waste management — making it smarter, faster,
+            and more eco-conscious.</p>
+        </div>
+        <div class="cards-grid">
+          <div class="card reveal delay-1">
+            <div class="card-icon-wrap">🎯</div>
+            <h3 class="card-title">Our Mission</h3>
+            <p class="card-text">To provide accessible, efficient waste management services that reduce environmental
+              impact and create cleaner communities for everyone.</p>
+          </div>
+          <div class="card reveal delay-2">
+            <div class="card-icon-wrap">🔬</div>
+            <h3 class="card-title">Smart Technology</h3>
+            <p class="card-text">Powered by intelligent routing, real-time tracking, and data analytics to optimize
+              every aspect of waste collection and disposal.</p>
+          </div>
+          <div class="card reveal delay-3">
+            <div class="card-icon-wrap">🌱</div>
+            <h3 class="card-title">Eco-First Approach</h3>
+            <p class="card-text">We prioritize composting, recycling, and responsible disposal — minimizing landfill use
+              and promoting circular economy principles.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section id="services" class="section" style="background:var(--bg)">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-tag">Our Services</span>
+          <h2 class="section-title">Everything You Need for Waste Management</h2>
+          <p class="section-subtitle">From doorstep collection to final disposal — we handle it all with care and
+            professionalism.</p>
+        </div>
+        <div class="cards-grid">
+          <div class="card reveal delay-1">
+            <div class="card-icon-wrap">🚛</div>
+            <h3 class="card-title">Doorstep Pickup</h3>
+            <p class="card-text">Schedule a pickup at your convenience. Our team arrives on time with the right
+              equipment for your waste type.</p>
+          </div>
+          <div class="card reveal delay-2">
+            <div class="card-icon-wrap">♻️</div>
+            <h3 class="card-title">Waste Recycling</h3>
+            <p class="card-text">We sort and process recyclable materials — paper, plastic, metal, glass — diverting
+              them from landfills.</p>
+          </div>
+          <div class="card reveal delay-3">
+            <div class="card-icon-wrap">🌿</div>
+            <h3 class="card-title">Composting</h3>
+            <p class="card-text">Organic and biodegradable waste is converted into nutrient-rich compost that benefits
+              local agriculture.</p>
+          </div>
+          <div class="card reveal delay-1">
+            <div class="card-icon-wrap">⚠️</div>
+            <h3 class="card-title">Hazardous Disposal</h3>
+            <p class="card-text">Certified handling and safe disposal of electronic waste, chemicals, and medical waste
+              by trained professionals.</p>
+          </div>
+          <div class="card reveal delay-2">
+            <div class="card-icon-wrap">📍</div>
+            <h3 class="card-title">Real-Time Tracking</h3>
+            <p class="card-text">Know exactly where your pickup vehicle is and when to expect collection — live updates
+              at every step.</p>
+          </div>
+          <div class="card reveal delay-3">
+            <div class="card-icon-wrap">📊</div>
+            <h3 class="card-title">Analytics & Reports</h3>
+            <p class="card-text">Detailed reports on waste metrics, collection history, and environmental impact for
+              users and administrators.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WASTE SEGREGATION GUIDE -->
+    <section id="segregation" class="section section-white">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-tag">Waste Guide</span>
+          <h2 class="section-title">Learn Proper Waste Segregation 🗑️</h2>
+          <p class="section-subtitle">Dispose waste correctly to maximize recycling and minimize environmental harm.</p>
+        </div>
+        <div class="waste-cards">
+          <div class="waste-card biodegradable reveal delay-1">
+            <div class="waste-badge badge-green">GREEN BIN</div>
+            <div class="waste-card-icon">🌿</div>
+            <h3 class="waste-card-title">Biodegradable</h3>
+            <p class="waste-card-examples">Kitchen waste, food scraps, vegetable peels, garden clippings, leaves — all
+              items that naturally decompose.</p>
+          </div>
+          <div class="waste-card recyclable reveal delay-2">
+            <div class="waste-badge badge-blue">BLUE BIN</div>
+            <div class="waste-card-icon">♻️</div>
+            <h3 class="waste-card-title">Recyclable</h3>
+            <p class="waste-card-examples">Paper, cardboard, plastic bottles, glass jars, metal cans — clean and dry
+              items that can be reprocessed.</p>
+          </div>
+          <div class="waste-card hazardous reveal delay-3">
+            <div class="waste-badge badge-orange">SPECIAL HANDLING</div>
+            <div class="waste-card-icon">⚠️</div>
+            <h3 class="waste-card-title">Hazardous</h3>
+            <p class="waste-card-examples">E-waste, batteries, chemicals, paint, medicines — items requiring certified
+              handling and special disposal.</p>
+          </div>
+          <div class="waste-card general reveal delay-4">
+            <div class="waste-badge badge-gray">BLACK BIN</div>
+            <div class="waste-card-icon">🗑️</div>
+            <h3 class="waste-card-title">General Waste</h3>
+            <p class="waste-card-examples">Non-recyclable, mixed waste that doesn't fit other categories — minimize this
+              by reducing, reusing, recycling.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section section-dark">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-tag">How It Works</span>
+          <h2 class="section-title" style="color:white">Simple. Fast. Eco-Friendly.</h2>
+          <p class="section-subtitle">Get started in minutes and contribute to a cleaner city.</p>
+        </div>
+        <div class="cards-grid">
+          <div class="card reveal delay-1"
+            style="background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.12);color:white">
+            <div class="card-icon-wrap" style="background:rgba(255,167,38,0.15)">1️⃣</div>
+            <h3 class="card-title" style="color:white">Sign Up</h3>
+            <p class="card-text" style="color:rgba(255,255,255,0.7)">Create your free account with name, email and
+              address in under 2 minutes.</p>
+          </div>
+          <div class="card reveal delay-2"
+            style="background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.12);color:white">
+            <div class="card-icon-wrap" style="background:rgba(255,167,38,0.15)">2️⃣</div>
+            <h3 class="card-title" style="color:white">Schedule Pickup</h3>
+            <p class="card-text" style="color:rgba(255,255,255,0.7)">Select waste type, preferred date & time slot, and
+              submit your request.</p>
+          </div>
+          <div class="card reveal delay-3"
+            style="background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.12);color:white">
+            <div class="card-icon-wrap" style="background:rgba(255,167,38,0.15)">3️⃣</div>
+            <h3 class="card-title" style="color:white">We Collect</h3>
+            <p class="card-text" style="color:rgba(255,255,255,0.7)">Our trained team arrives at your location and
+              collects the waste safely.</p>
+          </div>
+          <div class="card reveal delay-4"
+            style="background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.12);color:white">
+            <div class="card-icon-wrap" style="background:rgba(255,167,38,0.15)">4️⃣</div>
+            <h3 class="card-title" style="color:white">Eco-Disposal</h3>
+            <p class="card-text" style="color:rgba(255,255,255,0.7)">Waste is processed, recycled, composted, or safely
+              disposed of at certified facilities.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="section section-white">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-tag">Contact Us</span>
+          <h2 class="section-title">Get in Touch</h2>
+          <p class="section-subtitle">Have questions or need support? We're here to help 24/7.</p>
+        </div>
+        <div class="contact-grid">
+          <div class="contact-info reveal">
+            <h3>We'd love to hear from you</h3>
+            <p style="color:var(--text-muted);margin-bottom:2rem">Whether it's a general inquiry, technical issue, or
+              partnership opportunity — reach out and we'll get back to you within 24 hours.</p>
+            <div class="contact-detail">
+              <div class="contact-icon">📧</div>
+              <div>
+                <strong>Email Us</strong>
+                <p style="color:var(--text-muted);font-size:0.9rem">support@ecowaste.com</p>
+              </div>
+            </div>
+            <div class="contact-detail">
+              <div class="contact-icon">📞</div>
+              <div>
+                <strong>Call Us</strong>
+                <p style="color:var(--text-muted);font-size:0.9rem">+91 98765 43210 · Mon–Sat 8AM–8PM</p>
+              </div>
+            </div>
+            <div class="contact-detail">
+              <div class="contact-icon">📍</div>
+              <div>
+                <strong>Office Address</strong>
+                <p style="color:var(--text-muted);font-size:0.9rem">EcoWaste HQ, Green City, India</p>
+              </div>
+            </div>
+          </div>
+          <div class="contact-form reveal delay-2">
+            <h3 style="margin-bottom:1.5rem;font-size:1.2rem;font-weight:700">Send a Message</h3>
+            <form onsubmit="submitContact(event)">
+              <div class="form-row">
+                <div class="form-group"><label>Your Name</label><input type="text" class="form-input"
+                    placeholder="John Doe" required /></div>
+                <div class="form-group"><label>Email Address</label><input type="email" class="form-input"
+                    placeholder="john@email.com" required /></div>
+              </div>
+              <div class="form-group"><label>Subject</label><input type="text" class="form-input"
+                  placeholder="How can we help?" required /></div>
+              <div class="form-group"><label>Message</label><textarea class="form-textarea"
+                  placeholder="Write your message here..." required></textarea></div>
+              <button type="submit" class="btn btn-green btn-full">Send Message 📨</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="container">
+        <div class="footer-grid">
+          <div>
+            <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.8rem">
+              <div style="font-size:1.5rem">🌿</div>
+              <span
+                style="font-family:'Poppins',sans-serif;font-size:1.2rem;font-weight:700;color:white">EcoWaste</span>
+            </div>
+            <p class="footer-brand-desc">Smarter waste collection for cleaner cities. Committed to a sustainable future
+              — one pickup at a time.</p>
+          </div>
+          <div>
+            <h4>Quick Links</h4>
+            <a class="footer-link" onclick="scrollToSection('home')">Home</a>
+            <a class="footer-link" onclick="scrollToSection('about')">About</a>
+            <a class="footer-link" onclick="scrollToSection('services')">Services</a>
+            <a class="footer-link" onclick="scrollToSection('contact')">Contact</a>
+          </div>
+          <div>
+            <h4>Services</h4>
+            <span class="footer-link">Doorstep Pickup</span>
+            <span class="footer-link">Recycling</span>
+            <span class="footer-link">Composting</span>
+            <span class="footer-link">Hazardous Disposal</span>
+          </div>
+          <div>
+            <h4>Contact</h4>
+            <span class="footer-link">📧 support@ecowaste.com</span>
+            <span class="footer-link">📞 +91 98765 43210</span>
+            <span class="footer-link">⏰ Mon–Sat: 8AM–8PM</span>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>© 2024 EcoWaste Management System. All rights reserved. Made with 💚 for a greener planet.</p>
+        </div>
+      </div>
+    </footer>
+
+  </div><!-- end landing-page -->
+
+  <!-- ======================================================= -->
+  <!-- AUTH MODALS                                             -->
+  <!-- ======================================================= -->
+  <!-- LOGIN MODAL -->
+  <div class="modal-overlay" id="login-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Welcome Back 👋</h2>
+        <div class="modal-close" onclick="closeModal('login-modal')">✕</div>
+      </div>
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" class="form-input" id="login-email" placeholder="your@email.com" required />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" class="form-input" id="login-password" placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="btn btn-green btn-full" id="login-btn">Sign In 🌿</button>
+      </form>
+      <p style="text-align:center;margin-top:1rem;font-size:0.9rem;color:var(--text-muted)">
+        Don't have an account?
+        <a onclick="switchModal('login-modal','register-modal')"
+          style="color:var(--primary);font-weight:600;cursor:pointer"> Sign Up</a>
+      </p>
+      <div
+        style="margin-top:1rem;padding:0.8rem;background:#f9f9f9;border-radius:8px;font-size:0.8rem;color:var(--text-muted)">
+        <strong>Demo:</strong> admin@wastems.com / Admin@123
+      </div>
+    </div>
+  </div>
+
+  <!-- REGISTER MODAL -->
+  <div class="modal-overlay" id="register-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Create Account 🌱</h2>
+        <div class="modal-close" onclick="closeModal('register-modal')">✕</div>
+      </div>
+      <form onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" class="form-input" id="reg-name" placeholder="John Doe" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" class="form-input" id="reg-email" placeholder="your@email.com" required />
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" class="form-input" id="reg-phone" placeholder="+91 9876543210" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" class="form-input" id="reg-password" placeholder="Min. 6 characters" required
+            minlength="6" />
+        </div>
+        <div class="form-group">
+          <label>Address</label>
+          <textarea class="form-textarea" id="reg-address" placeholder="Your full address for pickup"
+            style="min-height:70px"></textarea>
+        </div>
+        <button type="submit" class="btn btn-green btn-full" id="register-btn">Create Account 🚀</button>
+      </form>
+      <p style="text-align:center;margin-top:1rem;font-size:0.9rem;color:var(--text-muted)">
+        Already have an account?
+        <a onclick="switchModal('register-modal','login-modal')"
+          style="color:var(--primary);font-weight:600;cursor:pointer"> Sign In</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- DASHBOARD APP                                          -->
+  <!-- ======================================================= -->
+  <div id="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div style="font-size:1.5rem">🌿</div>
+        <span class="sidebar-logo-text">Eco<span>Waste</span></span>
+      </div>
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <!-- Populated by JS based on role -->
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sidebar-user">
+          <div class="user-avatar" id="sidebar-avatar">?</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-name">Loading...</div>
+            <div class="user-role" id="sidebar-role">user</div>
+          </div>
+          <span style="color:rgba(255,255,255,0.5);font-size:0.8rem;cursor:pointer" onclick="logout()">⏻</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-content">
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <div style="display:flex;align-items:center;gap:1rem">
+          <button class="hamburger" style="display:flex" id="sidebar-toggle" onclick="toggleSidebar()">
+            <span style="width:22px;height:2px;background:var(--text-dark);border-radius:2px;display:block"></span>
+            <span
+              style="width:22px;height:2px;background:var(--text-dark);border-radius:2px;display:block;margin:5px 0"></span>
+            <span style="width:22px;height:2px;background:var(--text-dark);border-radius:2px;display:block"></span>
+          </button>
+          <span class="topbar-title" id="topbar-title">Dashboard</span>
+        </div>
+        <div class="topbar-right">
+          <div class="notif-btn" onclick="toggleNotifications()" id="notif-btn">
+            🔔
+            <div class="notif-badge" id="notif-badge" style="display:none">0</div>
+          </div>
+          <button class="btn btn-sm btn-outline-green" onclick="logout()">Sign Out</button>
+        </div>
+      </div>
+
+      <!-- NOTIFICATION DRAWER -->
+      <div class="notif-drawer" id="notif-drawer">
+        <div class="notif-drawer-header">
+          <strong>Notifications</strong>
+          <button class="btn btn-sm" onclick="markAllRead()" style="font-size:0.75rem;color:var(--primary)">Mark all
+            read</button>
+        </div>
+        <div class="notif-list" id="notif-list">
+          <div class="empty-state" style="padding:2rem">
+            <div>🔔</div>
+            <p>No notifications yet</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTENT AREA -->
+      <div class="content-area" id="content-area">
+        <!-- Dynamic content rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- AI CHATBOT WIDGET (shown when logged in)               -->
+  <!-- ======================================================= -->
+  <div id="chatbot-widget" style="display:none">
+    <div class="chat-window" id="chat-window">
+      <div class="chat-header">
+        <div class="chat-header-avatar">🤖</div>
+        <div>
+          <div class="chat-name">EcoBot AI</div>
+          <div class="chat-status">● Online · Your eco-assistant</div>
+        </div>
+        <button class="chat-close" onclick="toggleChat()">✕</button>
+      </div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="chat-suggestions" id="chat-suggestions">
+        <span class="chat-suggestion" onclick="sendSuggestion(this)">♻️ How to recycle?</span>
+        <span class="chat-suggestion" onclick="sendSuggestion(this)">📅 Schedule pickup</span>
+        <span class="chat-suggestion" onclick="sendSuggestion(this)">⚠️ Hazardous waste</span>
+        <span class="chat-suggestion" onclick="sendSuggestion(this)">🌍 Eco tips</span>
+      </div>
+      <div class="chat-input-area">
+        <input class="chat-input" id="chat-input" placeholder="Ask EcoBot anything…"
+          onkeydown="if(event.key==='Enter')sendChat()" />
+        <button class="chat-send" onclick="sendChat()">➤</button>
+      </div>
+    </div>
+    <button class="chat-toggle" onclick="toggleChat()" title="Chat with EcoBot">🤖</button>
+  </div>
+
+  <script>
+    window.ECOWASTE_API_BASE_URL = window.ECOWASTE_API_BASE_URL || '/api';
+  </script>
+  <script src="/js/ai_features.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+
+</html>
