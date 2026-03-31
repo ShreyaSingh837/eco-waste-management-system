@@ -28,6 +28,8 @@ git push -u origin main
 
 Create a new Render Web Service connected to your GitHub repo.
 
+This repo now includes [render.yaml](/d:/INT219Project/render.yaml), so Render can auto-detect the service settings.
+
 Use these settings:
 
 - Runtime: `Node`
@@ -36,13 +38,15 @@ Use these settings:
 - Health Check Path: `/api/health`
 - Root Directory: leave blank
 
-Set these environment variables in Render:
+If you deploy from `render.yaml`, Render will auto-generate the app secrets and set `DATABASE_PATH=/tmp/ecowaste.db`.
+
+Optional manual environment variables in Render:
 
 - `NODE_ENV=production`
 - `JWT_SECRET=<strong-random-secret>`
 - `SESSION_SECRET=<strong-random-secret>`
-- `DATABASE_PATH=/var/data/ecowaste.db`
-- `ALLOWED_ORIGINS=https://your-netlify-site.netlify.app`
+- `DATABASE_PATH=/var/data/ecowaste.db` if you later attach a persistent disk
+- `ALLOWED_ORIGINS=https://your-netlify-site.netlify.app` if you choose direct browser-to-API calls instead of the Netlify proxy
 - `GEMINI_API_KEY=<optional>`
 
 Important:
@@ -58,18 +62,12 @@ https://ecowaste-api.onrender.com
 
 ## 4. Deploy Frontend On Netlify
 
-Before deploying, update [public/_redirects](/d:/INT219Project/public/_redirects):
-
-```text
-/api/*  https://YOUR-RENDER-SERVICE.onrender.com/api/:splat  200
-```
-
-Replace `YOUR-RENDER-SERVICE` with your real Render backend host.
+This repo now includes [netlify.toml](/d:/INT219Project/netlify.toml), so Netlify can detect the publish directory automatically.
 
 Then create a new Netlify site from the same GitHub repo with:
 
 - Base directory: blank
-- Publish directory: `public`
+- Publish directory: auto-detected from `netlify.toml`
 - Build command: blank
 
 Redeploy after saving.

@@ -65,8 +65,8 @@ For Render with a persistent disk, use a database path such as:
 
 - The frontend can be hosted on Netlify from the `public/` folder.
 - The backend can be hosted on Render as a Node web service.
-- `public/_redirects` contains the Netlify proxy rule for `/api/*`.
-- Replace `YOUR-RENDER-SERVICE` in `public/_redirects` after your Render backend URL is known.
+- `render.yaml` and `netlify.toml` are included for quicker deployment.
+- `public/_redirects` proxies `/api/*` to the configured Render backend service.
 
 Detailed deployment steps are in [DEPLOYMENT.md](/d:/INT219Project/DEPLOYMENT.md).
 
