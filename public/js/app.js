@@ -39,9 +39,14 @@ async function api(method, path, body = null) {
     await warmBackendConnection();
   }
 
+  const isAuthPath = path === '/auth/login' || path === '/auth/register' || path === '/auth/me';
+  const timeoutMs = isAuthPath ? 25000 : 15000;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   const token = localStorage.getItem('token');
   const opts = {
     method,
+    signal: controller.signal,
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
@@ -77,7 +82,15 @@ async function api(method, path, body = null) {
     return data;
   } catch (error) {
     console.error(`API request failed for ${path}:`, error);
+    if (error.name === 'AbortError') {
+      return {
+        success: false,
+        message: 'The server took too long to respond. If Render is waking up, wait a few seconds and try again.'
+      };
+    }
     return { success: false, message: API_CONNECTION_ERROR };
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
