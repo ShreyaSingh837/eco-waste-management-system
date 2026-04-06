@@ -551,7 +551,24 @@
   </div>
 
   <script>
-    window.ECOWASTE_API_BASE_URL = window.ECOWASTE_API_BASE_URL || '/api';
+    (function () {
+      function normalizeBase(url) {
+        return typeof url === 'string' ? url.replace(/\/+$/, '') : url;
+      }
+
+      if (window.ECOWASTE_API_BASE_URL) {
+        window.ECOWASTE_API_BASE_URL = normalizeBase(window.ECOWASTE_API_BASE_URL);
+        return;
+      }
+
+      var host = window.location.hostname;
+      var isLocalhost = host === 'localhost' || host === '127.0.0.1';
+      var productionApiBase = 'https://ecowaste-int219-abhinavduvva124.onrender.com/api';
+
+      window.ECOWASTE_API_BASE_URL = isLocalhost
+        ? 'http://127.0.0.1:3000/api'
+        : productionApiBase;
+    })();
   </script>
   <script src="/js/ai_features.js"></script>
   <script src="/js/app.js"></script>

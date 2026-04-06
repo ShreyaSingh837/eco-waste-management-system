@@ -6,9 +6,13 @@ const API = window.ECOWASTE_API_BASE_URL || '/api';
 let currentUser = null;
 let currentView = 'dashboard';
 let notifInterval = null;
+const API_CONNECTION_ERROR =
+  'Could not connect to the server. Please wait a few seconds for the Render backend to wake up and try again.';
+let apiWarmupPromise = null;
 
 // ==================== INIT ====================
 window.addEventListener('load', () => {
+  warmBackendConnection();
   setTimeout(() => {
     document.getElementById('page-loader').classList.add('hidden');
     initRevealAnimations();
@@ -20,21 +24,61 @@ window.addEventListener('load', () => {
   }
 });
 
+function warmBackendConnection() {
+  if (apiWarmupPromise) return apiWarmupPromise;
+  const isRemoteRenderApi = typeof API === 'string' && API.includes('onrender.com');
+  if (!isRemoteRenderApi) return Promise.resolve();
+
+  apiWarmupPromise = fetch(API + '/health', { method: 'GET' }).catch(() => null);
+  return apiWarmupPromise;
+}
+
 // ==================== API HELPER ====================
 async function api(method, path, body = null) {
+  if (path === '/auth/login' || path === '/auth/register' || path === '/auth/me') {
+    await warmBackendConnection();
+  }
+
   const token = localStorage.getItem('token');
   const opts = {
     method,
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
   };
   if (token) opts.headers['Authorization'] = `Bearer ${token}`;
   if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(API + path, opts);
-  const data = await res.json();
-  if (res.status === 401 || res.status === 403) {
-    if (path !== '/auth/login') { logout(); return { success: false }; }
+  try {
+    const res = await fetch(API + path, opts);
+    const contentType = res.headers.get('content-type') || '';
+    let data;
+
+    if (contentType.includes('application/json')) {
+      data = await res.json();
+    } else {
+      const text = await res.text();
+      data = {
+        success: false,
+        message: res.ok ? 'Unexpected response from server.' : `Request failed with status ${res.status}.`,
+        raw: text
+      };
+    }
+
+    if (!res.ok && !data.message) {
+      data.message = `Request failed with status ${res.status}.`;
+    }
+
+    if ((res.status === 401 || res.status === 403) && path !== '/auth/login') {
+      logout();
+      return { success: false, message: data.message || 'Your session has expired.' };
+    }
+
+    return data;
+  } catch (error) {
+    console.error(`API request failed for ${path}:`, error);
+    return { success: false, message: API_CONNECTION_ERROR };
   }
-  return data;
 }
 
 // ==================== AUTH ====================
@@ -51,12 +95,18 @@ async function verifyAndLoadApp(token) {
 async function handleLogin(e) {
   e.preventDefault();
   const btn = document.getElementById('login-btn');
-  btn.textContent = 'Signing in…'; btn.disabled = true;
-  const data = await api('POST', '/auth/login', {
-    email: document.getElementById('login-email').value,
-    password: document.getElementById('login-password').value
-  });
-  btn.textContent = 'Sign In 🌿'; btn.disabled = false;
+  btn.textContent = 'Signing in...'; btn.disabled = true;
+  let data;
+  try {
+    data = await api('POST', '/auth/login', {
+      email: document.getElementById('login-email').value,
+      password: document.getElementById('login-password').value
+    });
+  } finally {
+    btn.textContent = 'Sign In 🌿';
+    btn.disabled = false;
+  }
+
   if (data.success) {
     localStorage.setItem('token', data.token);
     currentUser = data.user;
@@ -64,22 +114,28 @@ async function handleLogin(e) {
     showApp();
     showToast('success', 'Welcome back!', `Hello ${data.user.name} 👋`);
   } else {
-    showToast('error', 'Login Failed', data.message);
+    showToast('error', 'Login Failed', data.message || API_CONNECTION_ERROR);
   }
 }
 
 async function handleRegister(e) {
   e.preventDefault();
   const btn = document.getElementById('register-btn');
-  btn.textContent = 'Creating…'; btn.disabled = true;
-  const data = await api('POST', '/auth/register', {
-    name: document.getElementById('reg-name').value,
-    email: document.getElementById('reg-email').value,
-    phone: document.getElementById('reg-phone').value,
-    password: document.getElementById('reg-password').value,
-    address: document.getElementById('reg-address').value
-  });
-  btn.textContent = 'Create Account 🚀'; btn.disabled = false;
+  btn.textContent = 'Creating...'; btn.disabled = true;
+  let data;
+  try {
+    data = await api('POST', '/auth/register', {
+      name: document.getElementById('reg-name').value,
+      email: document.getElementById('reg-email').value,
+      phone: document.getElementById('reg-phone').value,
+      password: document.getElementById('reg-password').value,
+      address: document.getElementById('reg-address').value
+    });
+  } finally {
+    btn.textContent = 'Create Account 🚀';
+    btn.disabled = false;
+  }
+
   if (data.success) {
     localStorage.setItem('token', data.token);
     currentUser = data.user;
@@ -87,7 +143,7 @@ async function handleRegister(e) {
     showApp();
     showToast('success', 'Account Created!', `Welcome to EcoWaste, ${data.user.name}! 🌿`);
   } else {
-    showToast('error', 'Registration Failed', data.message);
+    showToast('error', 'Registration Failed', data.message || API_CONNECTION_ERROR);
   }
 }
 

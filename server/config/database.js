@@ -15,6 +15,7 @@ function getDb() {
         db.pragma('journal_mode = WAL');
         db.pragma('foreign_keys = ON');
     }
+
     return db;
 }
 
@@ -110,65 +111,77 @@ function initializeDb() {
         );
     `);
 
-    // Seed data only if empty
-    const userCount = database.prepare('SELECT COUNT(*) as c FROM users').get().c;
-    if (userCount === 0) {
-        const adminHash  = bcrypt.hashSync('Admin@123', 12);
-        const driverHash = bcrypt.hashSync('Admin@123', 12);
+    const seedUser = database.prepare(`
+        INSERT OR IGNORE INTO users (name, email, password, role, phone, address)
+        VALUES (?, ?, ?, ?, ?, ?)
+    `);
 
-        database.prepare(`INSERT INTO users (name,email,password,role,phone,address) VALUES (?,?,?,?,?,?)`).run(
-            'System Admin','admin@wastems.com', adminHash,'admin','9876543210','EcoWaste HQ, City Center'
-        );
-        database.prepare(`INSERT INTO users (name,email,password,role,phone,address) VALUES (?,?,?,?,?,?)`).run(
-            'John Driver','driver@wastems.com', driverHash,'driver','9876543211','Driver Colony, North Zone'
-        );
+    const defaultUsers = [
+        ['System Admin', 'admin@wastems.com', bcrypt.hashSync('Admin@123', 12), 'admin', '9876543210', 'EcoWaste HQ, City Center'],
+        ['John Driver', 'driver@wastems.com', bcrypt.hashSync('Admin@123', 12), 'driver', '9876543211', 'Driver Colony, North Zone'],
+        ['Demo User', 'user@wastems.com', bcrypt.hashSync('User@123', 12), 'user', '9876543212', 'Green Residency, East Zone']
+    ];
 
+    defaultUsers.forEach(user => seedUser.run(...user));
+
+    const wasteTypeCount = database.prepare('SELECT COUNT(*) AS count FROM waste_types').get().count;
+    if (wasteTypeCount === 0) {
         const wasteTypes = [
-            ['Kitchen Waste','biodegradable','Food scraps, vegetable peels, cooked food leftovers','🍃','#4CAF50','Store in Green bin. Can be composted.'],
-            ['Garden Waste','biodegradable','Leaves, grass clippings, plant trimmings','🌿','#66BB6A','Bundle large branches. Place in Green bin.'],
-            ['Paper & Cardboard','recyclable','Newspapers, cardboard boxes, office paper','📰','#2196F3','Keep dry. Flatten cardboard. Place in Blue bin.'],
-            ['Plastic Waste','recyclable','Bottles, containers, packaging materials','♻️','#03A9F4','Rinse containers. Crush bottles. Place in Blue bin.'],
-            ['Glass Waste','recyclable','Bottles, jars, broken glass','🫙','#00BCD4','Wrap broken glass in newspaper. Place in Blue bin.'],
-            ['Electronic Waste','hazardous','Old phones, computers, batteries, cables','💻','#FF5722','Do not break. Special collection required.'],
-            ['Medical Waste','hazardous','Expired medicines, syringes, medical equipment','💊','#F44336','Seal in puncture-proof container.'],
-            ['Chemical Waste','hazardous','Paint, solvents, cleaning chemicals','⚗️','#FF9800','Never mix chemicals. Keep in original containers.'],
-            ['Mixed General Waste','general','Non-recyclable, non-hazardous mixed waste','🗑️','#9E9E9E','Place in Black bin.'],
+            ['Kitchen Waste', 'biodegradable', 'Food scraps, vegetable peels, cooked food leftovers', '🍃', '#4CAF50', 'Store in Green bin. Can be composted.'],
+            ['Garden Waste', 'biodegradable', 'Leaves, grass clippings, plant trimmings', '🌿', '#66BB6A', 'Bundle large branches. Place in Green bin.'],
+            ['Paper & Cardboard', 'recyclable', 'Newspapers, cardboard boxes, office paper', '📰', '#2196F3', 'Keep dry. Flatten cardboard. Place in Blue bin.'],
+            ['Plastic Waste', 'recyclable', 'Bottles, containers, packaging materials', '♻️', '#03A9F4', 'Rinse containers. Crush bottles. Place in Blue bin.'],
+            ['Glass Waste', 'recyclable', 'Bottles, jars, broken glass', '🫙', '#00BCD4', 'Wrap broken glass in newspaper. Place in Blue bin.'],
+            ['Electronic Waste', 'hazardous', 'Old phones, computers, batteries, cables', '💻', '#FF5722', 'Do not break. Special collection required.'],
+            ['Medical Waste', 'hazardous', 'Expired medicines, syringes, medical equipment', '💊', '#F44336', 'Seal in puncture-proof container.'],
+            ['Chemical Waste', 'hazardous', 'Paint, solvents, cleaning chemicals', '⚗️', '#FF9800', 'Never mix chemicals. Keep in original containers.'],
+            ['Mixed General Waste', 'general', 'Non-recyclable, non-hazardous mixed waste', '🗑️', '#9E9E9E', 'Place in Black bin.']
         ];
-        const insertWt = database.prepare('INSERT INTO waste_types (name,category,description,icon,color,handling_instructions) VALUES (?,?,?,?,?,?)');
-        wasteTypes.forEach(wt => insertWt.run(...wt));
 
-        const vehicles = [
-            ['WM-TRK-001','Heavy Truck',5000,1,'available'],
-            ['WM-VAN-002','Collection Van',1500,null,'available'],
-            ['WM-TRK-003','Medium Truck',3000,null,'available'],
-            ['WM-SPL-004','Hazmat Truck',2000,null,'maintenance'],
-        ];
-        const insertV = database.prepare('INSERT INTO vehicles (vehicle_number,vehicle_type,capacity_kg,driver_id,status) VALUES (?,?,?,?,?)');
-        vehicles.forEach(v => insertV.run(...v));
+        const insertWasteType = database.prepare(
+            'INSERT INTO waste_types (name, category, description, icon, color, handling_instructions) VALUES (?, ?, ?, ?, ?, ?)'
+        );
 
-        console.log('✅ Database seeded with default data');
+        wasteTypes.forEach(wasteType => insertWasteType.run(...wasteType));
     }
 
-    console.log('✅ SQLite Database ready at:', DB_PATH);
+    const vehicleCount = database.prepare('SELECT COUNT(*) AS count FROM vehicles').get().count;
+    if (vehicleCount === 0) {
+        const driver = database.prepare('SELECT id FROM users WHERE email = ?').get('driver@wastems.com');
+        const driverId = driver ? driver.id : null;
+
+        const vehicles = [
+            ['WM-TRK-001', 'Heavy Truck', 5000, driverId, 'available'],
+            ['WM-VAN-002', 'Collection Van', 1500, null, 'available'],
+            ['WM-TRK-003', 'Medium Truck', 3000, null, 'available'],
+            ['WM-SPL-004', 'Hazmat Truck', 2000, null, 'maintenance']
+        ];
+
+        const insertVehicle = database.prepare(
+            'INSERT INTO vehicles (vehicle_number, vehicle_type, capacity_kg, driver_id, status) VALUES (?, ?, ?, ?, ?)'
+        );
+
+        vehicles.forEach(vehicle => insertVehicle.run(...vehicle));
+    }
+
+    console.log(`SQLite Database ready at: ${DB_PATH}`);
     return true;
 }
 
-// Promise-based wrappers that mimic mysql2 API for compatibility
 const pool = {
     async execute(sql, params = []) {
         const database = getDb();
-        const normalized = sql.replace(/\?/g, () => '?');
-        
         const trimmed = sql.trim().toUpperCase();
+
         if (trimmed.startsWith('SELECT') || trimmed.startsWith('SHOW')) {
-            const stmt = database.prepare(sql);
-            const rows = stmt.all(...params);
+            const statement = database.prepare(sql);
+            const rows = statement.all(...params);
             return [rows, []];
-        } else {
-            const stmt = database.prepare(sql);
-            const info = stmt.run(...params);
-            return [{ insertId: info.lastInsertRowid, affectedRows: info.changes }, []];
         }
+
+        const statement = database.prepare(sql);
+        const info = statement.run(...params);
+        return [{ insertId: info.lastInsertRowid, affectedRows: info.changes }, []];
     }
 };
 
@@ -176,8 +189,8 @@ async function testConnection() {
     try {
         initializeDb();
         return true;
-    } catch (err) {
-        console.error('Database init error:', err.message);
+    } catch (error) {
+        console.error('Database init error:', error.message);
         return false;
     }
 }

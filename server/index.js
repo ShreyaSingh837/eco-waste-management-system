@@ -1,11 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+
 require('dotenv').config();
 
 const { testConnection } = require('./config/database');
-
-// Import routes
 const authRoutes = require('./routes/auth');
 const requestRoutes = require('./routes/requests');
 const adminRoutes = require('./routes/admin');
@@ -15,32 +14,62 @@ const aiRoutes = require('./routes/ai');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const defaultOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
+
+const defaultOrigins = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://*.vercel.app'
+];
+
 const configuredOrigins = (process.env.ALLOWED_ORIGINS || '')
     .split(',')
-    .map(origin => origin.trim())
+    .map(origin => origin.trim().replace(/\/+$/, ''))
     .filter(Boolean);
+
 const allowedOrigins = [...new Set([...defaultOrigins, ...configuredOrigins])];
 
-// ===================== MIDDLEWARE =====================
+function isOriginAllowed(origin) {
+    if (!origin) {
+        return true;
+    }
+
+    const normalizedOrigin = origin.replace(/\/+$/, '');
+
+    return allowedOrigins.some(pattern => {
+        if (pattern === normalizedOrigin) {
+            return true;
+        }
+
+        if (!pattern.includes('*')) {
+            return false;
+        }
+
+        const regexPattern = pattern
+            .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+            .replace(/\*/g, '.*');
+
+        return new RegExp(`^${regexPattern}$`).test(normalizedOrigin);
+    });
+}
+
 app.use(cors({
     origin(origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (isOriginAllowed(origin)) {
             return callback(null, true);
         }
 
         return callback(new Error(`Origin ${origin} is not allowed by CORS`));
     },
-    credentials: true
+    credentials: true,
+    optionsSuccessStatus: 204
 }));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Serve static files from public directory
 app.use(express.static(path.join(__dirname, '../public')));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Request logging in development
 if (process.env.NODE_ENV !== 'production') {
     app.use((req, res, next) => {
         console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
@@ -48,7 +77,6 @@ if (process.env.NODE_ENV !== 'production') {
     });
 }
 
-// ===================== API ROUTES =====================
 app.use('/api/auth', authRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/admin', adminRoutes);
@@ -56,52 +84,57 @@ app.use('/api/waste-types', wasteTypeRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/ai', aiRoutes);
 
-// Health check
 app.get('/api/health', (req, res) => {
-    res.json({ 
-        success: true, 
-        message: 'EcoWaste Management API is running 🌿',
+    res.json({
+        success: true,
+        message: 'EcoWaste Management API is running',
         timestamp: new Date().toISOString(),
-        version: '1.0.0'
+        version: '1.0.0',
+        databasePath: process.env.DATABASE_PATH || './database/ecowaste.db'
     });
 });
 
-// ===================== FRONTEND ROUTING =====================
-// Serve index.html for all non-API routes (SPA support)
 app.get('*', (req, res) => {
     if (!req.path.startsWith('/api')) {
-        res.sendFile(path.join(__dirname, '../public', 'index.html'));
-    } else {
-        res.status(404).json({ success: false, message: 'API endpoint not found' });
+        return res.sendFile(path.join(__dirname, '../public', 'index.html'));
     }
+
+    return res.status(404).json({ success: false, message: 'API endpoint not found' });
 });
 
-// ===================== ERROR HANDLER =====================
 app.use((err, req, res, next) => {
     console.error('Unhandled error:', err);
-    res.status(500).json({ 
-        success: false, 
-        message: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message 
+
+    if (err.message && err.message.includes('not allowed by CORS')) {
+        return res.status(403).json({
+            success: false,
+            message: 'Request blocked by CORS policy'
+        });
+    }
+
+    return res.status(500).json({
+        success: false,
+        message: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message
     });
 });
 
-// ===================== START SERVER =====================
 async function startServer() {
     const dbConnected = await testConnection();
-    
+
     if (!dbConnected) {
-        console.error('⚠️  Database connection failed. Server starting without DB...');
-        console.error('📝  Please set up MySQL and run: database/schema.sql');
+        console.error('Database connection failed. Authentication will not work until SQLite initializes correctly.');
     }
 
     app.listen(PORT, () => {
-        console.log('\n🌿 ====================================');
-        console.log('   EcoWaste Management System');
-        console.log('🌿 ====================================');
-        console.log(`🚀 Server running at: http://localhost:${PORT}`);
-        console.log(`📊 API Health:        http://localhost:${PORT}/api/health`);
-        console.log(`🔐 Admin Login:       admin@wastems.com / Admin@123`);
-        console.log('🌿 ====================================\n');
+        console.log('\n====================================');
+        console.log(' EcoWaste Management System');
+        console.log('====================================');
+        console.log(`Server running at: http://localhost:${PORT}`);
+        console.log(`API Health:        http://localhost:${PORT}/api/health`);
+        console.log('Admin Login:       admin@wastems.com / Admin@123');
+        console.log('Demo User:         user@wastems.com / User@123');
+        console.log(`Allowed Origins:   ${allowedOrigins.join(', ')}`);
+        console.log('====================================\n');
     });
 }
 

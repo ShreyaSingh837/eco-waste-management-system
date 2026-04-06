@@ -1,14 +1,28 @@
 const express = require('express');
-const router = express.Router();
 const bcrypt = require('bcryptjs');
+
 const { pool } = require('../config/database');
 const { generateToken, authenticateToken } = require('../middleware/auth');
 
+const router = express.Router();
+
+function normalizeEmail(email) {
+    return typeof email === 'string' ? email.trim().toLowerCase() : '';
+}
+
+function normalizeText(value) {
+    return typeof value === 'string' ? value.trim() : '';
+}
+
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
-    const { name, email, password, phone, address } = req.body;
+    const normalizedName = normalizeText(req.body.name);
+    const normalizedEmail = normalizeEmail(req.body.email);
+    const password = req.body.password;
+    const normalizedPhone = normalizeText(req.body.phone) || null;
+    const normalizedAddress = normalizeText(req.body.address) || null;
 
-    if (!name || !email || !password) {
+    if (!normalizedName || !normalizedEmail || !password) {
         return res.status(400).json({ success: false, message: 'Name, email, and password are required' });
     }
 
@@ -17,49 +31,64 @@ router.post('/register', async (req, res) => {
     }
 
     try {
-        const [existing] = await pool.execute('SELECT id FROM users WHERE email = ?', [email]);
-        if (existing.length > 0) {
+        const [existingUsers] = await pool.execute('SELECT id FROM users WHERE email = ?', [normalizedEmail]);
+        if (existingUsers.length > 0) {
             return res.status(409).json({ success: false, message: 'Email already registered' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 12);
         const [result] = await pool.execute(
             'INSERT INTO users (name, email, password, phone, address, role) VALUES (?, ?, ?, ?, ?, ?)',
-            [name, email, hashedPassword, phone || null, address || null, 'user']
+            [normalizedName, normalizedEmail, hashedPassword, normalizedPhone, normalizedAddress, 'user']
         );
 
-        const token = generateToken({ id: result.insertId, email, role: 'user', name });
+        const token = generateToken({
+            id: result.insertId,
+            email: normalizedEmail,
+            role: 'user',
+            name: normalizedName
+        });
 
-        // Create welcome notification
         await pool.execute(
             'INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)',
-            [result.insertId, 'Welcome to EcoWaste! 🌿', `Hello ${name}! Your account has been created successfully. Start requesting waste pickups to keep our city clean!`, 'success']
+            [
+                result.insertId,
+                'Welcome to EcoWaste!',
+                `Hello ${normalizedName}! Your account has been created successfully. Start requesting waste pickups to keep our city clean!`,
+                'success'
+            ]
         );
 
-        res.status(201).json({
+        return res.status(201).json({
             success: true,
             message: 'Account created successfully',
             token,
-            user: { id: result.insertId, name, email, role: 'user' }
+            user: {
+                id: result.insertId,
+                name: normalizedName,
+                email: normalizedEmail,
+                role: 'user'
+            }
         });
     } catch (error) {
         console.error('Register error:', error);
-        res.status(500).json({ success: false, message: 'Server error during registration' });
+        return res.status(500).json({ success: false, message: 'Server error during registration' });
     }
 });
 
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
+    const normalizedEmail = normalizeEmail(req.body.email);
+    const password = req.body.password;
 
-    if (!email || !password) {
+    if (!normalizedEmail || !password) {
         return res.status(400).json({ success: false, message: 'Email and password are required' });
     }
 
     try {
         const [users] = await pool.execute(
             'SELECT id, name, email, password, role, phone, address, avatar, is_active FROM users WHERE email = ?',
-            [email]
+            [normalizedEmail]
         );
 
         if (users.length === 0) {
@@ -78,9 +107,9 @@ router.post('/login', async (req, res) => {
         }
 
         const token = generateToken(user);
-        const { password: _, ...userWithoutPassword } = user;
+        const { password: _password, ...userWithoutPassword } = user;
 
-        res.json({
+        return res.json({
             success: true,
             message: 'Login successful',
             token,
@@ -88,7 +117,7 @@ router.post('/login', async (req, res) => {
         });
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ success: false, message: 'Server error during login' });
+        return res.status(500).json({ success: false, message: 'Server error during login' });
     }
 });
 
@@ -104,26 +133,29 @@ router.get('/me', authenticateToken, async (req, res) => {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        res.json({ success: true, user: users[0] });
+        return res.json({ success: true, user: users[0] });
     } catch (error) {
         console.error('Profile error:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        return res.status(500).json({ success: false, message: 'Server error' });
     }
 });
 
 // PUT /api/auth/profile - Update profile
 router.put('/profile', authenticateToken, async (req, res) => {
-    const { name, phone, address } = req.body;
+    const name = normalizeText(req.body.name);
+    const phone = normalizeText(req.body.phone) || null;
+    const address = normalizeText(req.body.address) || null;
+
     try {
         await pool.execute(
             'UPDATE users SET name = ?, phone = ?, address = ? WHERE id = ?',
             [name, phone, address, req.user.id]
         );
 
-        res.json({ success: true, message: 'Profile updated successfully' });
+        return res.json({ success: true, message: 'Profile updated successfully' });
     } catch (error) {
         console.error('Update profile error:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        return res.status(500).json({ success: false, message: 'Server error' });
     }
 });
 
@@ -139,13 +171,13 @@ router.put('/change-password', authenticateToken, async (req, res) => {
             return res.status(400).json({ success: false, message: 'Current password is incorrect' });
         }
 
-        const hashed = await bcrypt.hash(newPassword, 12);
-        await pool.execute('UPDATE users SET password = ? WHERE id = ?', [hashed, req.user.id]);
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+        await pool.execute('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, req.user.id]);
 
-        res.json({ success: true, message: 'Password changed successfully' });
+        return res.json({ success: true, message: 'Password changed successfully' });
     } catch (error) {
         console.error('Change password error:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        return res.status(500).json({ success: false, message: 'Server error' });
     }
 });
 

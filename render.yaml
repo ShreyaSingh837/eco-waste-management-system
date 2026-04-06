@@ -7,11 +7,17 @@ services:
     startCommand: npm start
     healthCheckPath: /api/health
     autoDeployTrigger: commit
+    disk:
+      name: ecowaste-data
+      mountPath: /var/data
+      sizeGB: 1
     envVars:
       - key: NODE_ENV
         value: production
       - key: DATABASE_PATH
-        value: /tmp/ecowaste.db
+        value: /var/data/ecowaste.db
+      - key: ALLOWED_ORIGINS
+        value: https://*.vercel.app
       - key: JWT_SECRET
         generateValue: true
       - key: SESSION_SECRET
