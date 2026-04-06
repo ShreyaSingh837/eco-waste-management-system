@@ -1,5 +1,5 @@
 # Proxy API requests from Netlify to the Render backend.
-/api/*  https://ecowaste-int219-abhinavduvva124.onrender.com/api/:splat  200
+/api/*  https://int219project.onrender.com/api/:splat  200
 
 # SPA fallback
 /*  /index.html  200
