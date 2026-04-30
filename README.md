@@ -22,8 +22,7 @@ Currently runs locally on http://localhost:3000
 - GPS tracking
 - Online payment system
 
-## 👩‍💻 Author
-Shreya Singh
+
 
 ## 🚀 Features
 - User Authentication (Login/Signup)
@@ -62,4 +61,7 @@ npm install
 
 ## 🌍 Goal
 To promote efficient waste management and encourage eco-friendly practices through digital solutions.
+
+## 👩‍💻 Author
+Shreya Singh
 
