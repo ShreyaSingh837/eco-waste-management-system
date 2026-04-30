@@ -59,6 +59,13 @@ npm install
 ### Dashboard
 ![Dashboard](https://raw.githubusercontent.com/ShreyaSingh837/eco-waste-management-system/refs/heads/main/Screenshot%202026-04-26%20171842.png)
 
+MIT License
+
+Copyright (c) 2026 Shreya Singh
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files...
+
 ## 🌍 Goal
 To promote efficient waste management and encourage eco-friendly practices through digital solutions.
 
