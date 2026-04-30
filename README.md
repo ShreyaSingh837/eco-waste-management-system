@@ -57,7 +57,7 @@ npm install
 ![Home](https://raw.githubusercontent.com/ShreyaSingh837/eco-waste-management-system/refs/heads/main/Screenshot%202026-04-26%20171649.png)
 
 ### Dashboard
-![Dashboard](image-link)
+![Dashboard](https://raw.githubusercontent.com/ShreyaSingh837/eco-waste-management-system/refs/heads/main/Screenshot%202026-04-26%20171842.png)
 
 ## 🌍 Goal
 To promote efficient waste management and encourage eco-friendly practices through digital solutions.
