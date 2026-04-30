@@ -54,7 +54,7 @@ npm install
 ## 📸 Screenshots
 
 ### Home Page
-![Home](image-link)
+![Home](https://raw.githubusercontent.com/ShreyaSingh837/eco-waste-management-system/refs/heads/main/Screenshot%202026-04-26%20171649.png)
 
 ### Dashboard
 ![Dashboard](image-link)
