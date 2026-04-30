@@ -37,6 +37,31 @@ npm install
 ### Dashboard
 ![Dashboard](image-link)
 
+## 📌 Project Description
+EcoWaste Management System is a full-stack web application designed to simplify waste collection by allowing users to schedule pickups, track requests, and learn proper waste segregation.
+
+## ⚙️ Installation
+1. Clone the repository
+2. Run npm install
+3. Run npm start
+4. Open http://localhost:3000
+
+## 📂 Project Structure
+- public → frontend files
+- server → backend logic
+- database → data storage
+
+## 🌐 Live Demo
+Currently runs locally on http://localhost:3000
+
+## 🚀 Future Scope
+- Mobile app integration
+- GPS tracking
+- Online payment system
+
+## 👩‍💻 Author
+Shreya Singh
+
 ## 🌍 Goal
 To promote efficient waste management and encourage eco-friendly practices through digital solutions.
 
