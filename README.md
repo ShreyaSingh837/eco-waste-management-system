@@ -28,6 +28,15 @@ Make sure the following are installed:
 
 Install project dependencies:
 npm install
+
+## 📸 Screenshots
+
+### Home Page
+![Home](image-link)
+
+### Dashboard
+![Dashboard](image-link)
+
 ## 🌍 Goal
 To promote efficient waste management and encourage eco-friendly practices through digital solutions.
 
