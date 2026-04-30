@@ -1,9 +1,7 @@
 # Eco-Waste Management System 🌱
 
-A full-stack web application that allows users to schedule eco-friendly waste collection from their homes.
+EcoWaste Management System is a full-stack web application designed to simplify waste collection by allowing users to schedule pickups, track requests, and learn proper waste segregation.A full-stack web application that allows users to schedule eco-friendly waste collection from their homes.
 
-## 📌 Project Description
-EcoWaste Management System is a full-stack web application designed to simplify waste collection by allowing users to schedule pickups, track requests, and learn proper waste segregation.
 
 ## ⚙️ Installation
 1. Clone the repository
