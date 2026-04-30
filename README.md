@@ -19,7 +19,15 @@ A full-stack web application that allows users to schedule eco-friendly waste co
 2. Run `npm install`
 3. Run `npm start`
 4. Open http://localhost:3000
+## 📦 Dependencies
 
+Make sure the following are installed:
+
+- Node.js
+- npm
+
+Install project dependencies:
+npm install
 ## 🌍 Goal
 To promote efficient waste management and encourage eco-friendly practices through digital solutions.
 
